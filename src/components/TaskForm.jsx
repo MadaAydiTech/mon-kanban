@@ -13,7 +13,6 @@ export default function TaskForm({ boardId, onCreated }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Charger les catégories au montage
   useEffect(() => {
     supabase.from('categories').select('*').then(({ data }) => {
       setCategories(data || []);
@@ -25,6 +24,7 @@ export default function TaskForm({ boardId, onCreated }) {
     setError('');
     if (!title.trim()) { setError('Le titre est obligatoire.'); return; }
     setLoading(true);
+
     const { data: { user } } = await supabase.auth.getUser();
     const { error } = await supabase.from('tasks').insert([{
       title: title.trim(),
@@ -36,9 +36,33 @@ export default function TaskForm({ boardId, onCreated }) {
       due_date: dueDate || null,
       created_by: user.id,
     }]);
+
     setLoading(false);
     if (error) { setError(error.message); return; }
-    // Réinitialiser le formulaire
+
+    // Envoyer un e-mail si une date d'échéance est définie
+    if (!error && dueDate) {
+      const formattedDate = new Date(dueDate).toLocaleDateString('fr-FR', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+      });
+      await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: [user.email],
+          subject: `📋 Tâche créée : ${title}`,
+          html: `
+            <h2>Tâche créée avec succès</h2>
+            <p><strong>Titre :</strong> ${title}</p>
+            <p><strong>Priorité :</strong> ${priority}</p>
+            <p><strong>Échéance :</strong> ${formattedDate}</p>
+          `,
+        }),
+      });
+    }
+
     setTitle(''); setDescription(''); setStatus('todo');
     setPriority('medium'); setCategoryId(''); setDueDate('');
     onCreated();
