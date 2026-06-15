@@ -13,9 +13,7 @@ function PomodoroTimer({ session }) {
   const [timeLeft, setTimeLeft] = useState(25 * 60);
   const [isRunning, setIsRunning] = useState(false);
   const [completedWorkSessions, setCompletedWorkSessions] = useState(0);
-  const [savedSessions, setSavedSessions] = useState([]);
 
-  // Tick
   useEffect(() => {
     if (!isRunning || timeLeft <= 0) return;
     const t = setTimeout(() => setTimeLeft((p) => p - 1), 1000);
@@ -29,7 +27,6 @@ function PomodoroTimer({ session }) {
     if (mode === 'work') {
       const nextCount = completedWorkSessions + 1;
       setCompletedWorkSessions(nextCount);
-      saveSession('work', workMinutes);
 
       if (nextCount % 4 === 0) {
         setMode('long');
@@ -44,30 +41,6 @@ function PomodoroTimer({ session }) {
     }
     setIsRunning(false);
   }, [timeLeft]);
-
-  async function saveSession(sessionMode, duration) {
-    if (!session?.user?.id) return;
-    const { error } = await supabase.from('pomodoro_sessions').insert({
-      user_id: session.user.id,
-      mode: sessionMode,
-      duration_minutes: duration,
-      completed_at: new Date().toISOString(),
-    });
-    if (!error) fetchSessions();
-  }
-
-  async function fetchSessions() {
-    if (!session?.user?.id) return;
-    const { data } = await supabase
-      .from('pomodoro_sessions')
-      .select('*')
-      .eq('user_id', session.user.id)
-      .order('completed_at', { ascending: false })
-      .limit(10);
-    if (data) setSavedSessions(data);
-  }
-
-  useEffect(() => { fetchSessions(); }, []);
 
   function resetTimer() {
     setIsRunning(false);
@@ -268,37 +241,6 @@ function PomodoroTimer({ session }) {
               </div>
             ))}
           </div>
-        </div>
-
-        {/* Historique */}
-        <div style={{
-          background: '#fff', border: '1px solid #E2E8F0',
-          borderRadius: '16px', padding: '24px',
-          boxShadow: '0 4px 16px rgba(0,0,0,0.05)',
-        }}>
-          <h3 style={{ margin: '0 0 14px', color: '#1E293B', fontSize: '1.1rem', fontWeight: 700 }}>📋 Historique (10 dernières)</h3>
-
-          {savedSessions.length === 0 ? (
-            <p style={{ color: '#94A3B8', fontSize: '0.9rem' }}>Aucune session enregistrée.</p>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {savedSessions.map((s) => (
-                <div key={s.id} style={{
-                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                  padding: '10px 14px', borderRadius: '8px',
-                  background: '#F8FAFC', border: '1px solid #E2E8F0',
-                }}>
-                  <span style={{ fontSize: '0.88rem', color: '#1E293B', fontWeight: 600 }}>
-                    {s.mode === 'work' ? 'Focus' : s.mode === 'short' ? 'Pause courte' : 'Pause longue'}
-                    {' — '}{s.duration_minutes} min
-                  </span>
-                  <span style={{ fontSize: '0.78rem', color: '#94A3B8' }}>
-                    {new Date(s.completed_at).toLocaleString('fr-FR', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' })}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
 
       </div>
