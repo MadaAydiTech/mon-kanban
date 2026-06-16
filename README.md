@@ -8,7 +8,7 @@ On a construit une app web de gestion de tâches style Kanban avec React et Supa
 ## On est qui ?
 
 - **Adam ABIDERRAHMANE** les composants React, les tâches, le déploiement,orienté TD plutôt,Fonctionnalité Pomodoro
-- **Maxence DABOIT** la base de données Supabase, l'auth, la navbar, le projet le plus développé surtout avec la fonctionnalité Pomodoro
+- **Maxence DA BOIT** la base de données Supabase, l'auth, la navbar, le projet le plus développé surtout avec la fonctionnalité Pomodoro
 
 ---
 
@@ -16,6 +16,7 @@ On a construit une app web de gestion de tâches style Kanban avec React et Supa
 
 Un tableau Kanban en ligne. Tu te connectes, tu crées des tâches, tu les organises entre 4 colonnes :
 **À faire → En cours → Validation → Terminée**
+![alt text](image.png)
 
 On a aussi ajouté un **timer Pomodoro** intégré directement dans le dashboard pour bosser par sessions de 25 min, avec les pauses courtes et longues. C'est notre fonctionnalité libre.
 
@@ -23,7 +24,7 @@ On a aussi ajouté un **timer Pomodoro** intégré directement dans le dashboard
 
 ## Lien de l'app déployée
 
-**A METTRE LIEN**
+**https://vercel.com/madaayditechs-projects**
 
 ---
 
@@ -45,7 +46,6 @@ On a aussi ajouté un **timer Pomodoro** intégré directement dans le dashboard
 ```bash
 # 1. Cloner le repo
 git clone https://github.com/MadaAydiTech/mon-kanban.git
-git clone https://github.com/maxdaboit/mon-kanban
 cd mon-kanban
 
 # 2. Installer les dépendances
